@@ -1,0 +1,39 @@
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:v0.11.3
+    container_name: sara-ai
+    restart: unless-stopped
+    ports:
+      - "${WEBUI_BIND:-127.0.0.1}:${WEBUI_PORT:-8080}:8080"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      ENABLE_OPENAI_API: "true"
+      OPENAI_API_BASE_URL: ${OPENAI_API_BASE_URL:-http://host.docker.internal:8001/v1}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-sk-local-not-used}
+      DEFAULT_MODELS: ${DEFAULT_MODELS:-Qwen3.8-Flash-Next-Uncensored-exl3-4bpw}
+      ENABLE_OLLAMA_API: "false"
+      WEBUI_NAME: ${WEBUI_NAME:-Sara AI}
+      WEBUI_URL: ${WEBUI_URL:-http://127.0.0.1:8080}
+      WEBUI_SECRET_KEY: ${WEBUI_SECRET_KEY:-change-me}
+      WEBUI_AUTH: "true"
+      ENABLE_SIGNUP: ${ENABLE_SIGNUP:-true}
+      ENABLE_IMAGE_GENERATION: ${ENABLE_IMAGE_GENERATION:-true}
+      IMAGE_GENERATION_ENGINE: ${IMAGE_GENERATION_ENGINE:-comfyui}
+      COMFYUI_BASE_URL: ${COMFYUI_BASE_URL:-http://host.docker.internal:8188}
+      ENABLE_CODE_EXECUTION: "false"
+      ENABLE_WEB_SEARCH: "false"
+      ENABLE_COMMUNITY_SHARING: "false"
+      OFFLINE_MODE: "true"
+    volumes:
+      - open-webui-data:/app/backend/data
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+volumes:
+  open-webui-data:
